@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDD Whiteboard SPA Wireframe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for the notecard look and feel */
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-y: hidden; /* Prevent body scroll */
+        }
+
+        .nav-card {
+            transition: all 0.2s ease-in-out;
+            transform-origin: center;
+        }
+
+        .nav-card:hover:not(.active) {
+            transform: scale(1.03) rotate(-1deg);
+            z-index: 10;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        
+        /* Custom scrollbar for a cleaner look */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0; /* slate-200 */
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #cbd5e1; /* slate-300 */
+        }
+
+        .vote-btn {
+            transition: all 0.15s ease;
+        }
+
+        .vote-btn:hover {
+            transform: scale(1.15);
+        }
+
+        .add-btn {
+            @apply flex items-center justify-center w-full py-2 border-2 border-dashed rounded-lg transition-colors text-sm;
+        }
+        
+        .add-btn:hover {
+             @apply bg-gray-100 text-gray-800 border-gray-500;
+        }
+
+        .keyword-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            @apply font-mono font-bold text-base px-3 py-1 rounded-md border border-gray-300 bg-white shadow-sm;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+             transition: box-shadow 0.15s ease;
+        }
+
+        .keyword-select:hover {
+            box-shadow: 0 0 0 2px #d1d5db;
+        }
+        
+        .gherkin-keyword-select {
+            @apply text-green-700 border-green-300;
+        }
+
+        .story-keyword-select {
+            @apply text-yellow-800 border-yellow-400;
+        }
+
+
+        /* Story Panel Styles */
+        #story-panel-overlay {
+            transition: opacity 0.3s ease-in-out;
+        }
+        #story-panel {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Collapsible Project Panel Styles */
+        #project-panel {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #project-panel-content, #project-title {
+            transition: opacity 0.2s ease-in-out;
+        }
+        #project-panel.collapsed {
+            width: 80px;
+        }
+        #project-panel.collapsed #project-panel-content,
+        #project-panel.collapsed #project-title {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        #project-panel .icon-collapse { display: block; }
+        #project-panel .icon-expand { display: none; }
+        #project-panel.collapsed .icon-collapse { display: none; }
+        #project-panel.collapsed .icon-expand { display: block; }
+        
+    </style>
+</head>
+<body class="bg-gray-100 antialiased text-gray-800">
+
+    <div class="flex flex-row h-screen">
+
+        <!-- Left Navigation: Project List -->
+        <aside id="project-panel" class="lg:w-80 bg-gray-200/50 p-4 lg:p-6 shrink-0 flex flex-col">
+            <div class="flex items-center justify-between mb-6 shrink-0">
+                <div id="project-header-left" class="flex items-center cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-600 shrink-0"><path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z"></path><polyline points="14 3 14 8 19 8"></polyline></svg>
+                    <h1 id="project-title" class="text-xl font-bold ml-2 transition-opacity">Projects</h1>
+                </div>
+                <button id="project-toggle-btn" class="p-1 rounded-full text-gray-500 hover:bg-gray-300 hover:text-gray-700">
+                    <svg class="icon-collapse h-6 w-6" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    <svg class="icon-expand h-6 w-6" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+
+            <!-- Desktop Navigation -->
+            <div id="project-panel-content" class="transition-opacity h-full flex flex-col">
+                <nav class="flex flex-col flex-1 min-h-0">
+                    <!-- New Project Button -->
+                    <a href="#" class="flex items-center justify-center w-full h-24 mb-4 shrink-0 border-2 border-dashed border-gray-400 text-gray-600 hover:bg-gray-200 hover:text-gray-800 hover:border-gray-500 rounded-lg transition-colors">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                         <span class="font-semibold">New Project</span>
+                    </a>
+
+                    <!-- Scrollable Project List -->
+                    <div id="project-list" class="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+                        <!-- Project list will be dynamically injected here -->
+                    </div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content: Example Map Layout -->
+        <main class="flex-1 bg-white p-4 sm:p-6 lg:p-8 overflow-y-auto custom-scrollbar">
+            <header id="main-header" class="mb-6 flex items-start justify-between">
+                <!-- Header content will be dynamically injected here -->
+            </header>
+            
+            <div id="main-content-area" class="flex flex-col gap-6">
+                <!-- Main content will be dynamically injected here -->
+            </div>
+
+            <footer class="text-center text-sm text-gray-400 mt-8 py-4 border-t">
+                <a href="#" class="hover:underline">License Information</a>
+                <span class="mx-2">&bull;</span>
+                <a href="#" class="hover:underline">About BDD</a>
+            </footer>
+        </main>
+
+        <!-- Story Panel -->
+        <div id="story-panel-overlay" class="fixed inset-0 bg-black/30 z-40 opacity-0 pointer-events-none"></div>
+        <div id="story-panel" class="fixed top-0 right-0 h-full w-96 bg-gray-50 shadow-2xl z-50 transform translate-x-full">
+            <div id="story-panel-content" class="flex flex-col h-full p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Stories</h2>
+                    <button id="close-story-panel-btn" class="p-1 rounded-full hover:bg-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <div class="mb-4">
+                    <input type="text" placeholder="Search stories..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                </div>
+                 <a href="#" class="add-btn border-yellow-400 text-yellow-600 font-semibold hover:bg-yellow-50 mb-4">
+                     + Add Story
+                </a>
+                <div id="story-list" class="flex-1 overflow-y-auto custom-scrollbar -mr-3 pr-3 space-y-2">
+                    <!-- Story List will be dynamically injected here -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const projectsData = {
+            'bdd-dashboard': {
+                name: 'BDD Dashboard',
+                description: 'A collaborative virtual whiteboard for BDD project planning using example mapping.',
+                repo: 'github.com/org/bdd-dashboard',
+                stories: {
+                    'login': {
+                        title: 'User Authentication',
+                        businessGoal: 'Increase user retention by providing a secure and personalized experience.',
+                        mainStakeholder: 'Registered User',
+                        stakeholderGoal: 'To log in to access their private dashboard.',
+                        rules: [
+                            { title: 'Credentials must be correct', examples: [{ title: 'Successful Login', steps: ['Given a known user with the correct password', 'When they log in', 'Then they are taken to their dashboard'] }, { title: 'Invalid Password', steps: ['Given a known user', 'When they use an incorrect password', 'Then they see an error message'] }] },
+                            { title: 'User must have an active account', examples: [{ title: 'Suspended Account', steps: ['Given a user whose account is suspended', 'When they try to log in', 'Then they see an "account suspended" message'] }] },
+                            { title: 'Account must not be locked', examples: [{ title: 'Locked Account', steps: ['Given a user whose account is locked', 'When they try to log in', 'Then they see an "account locked" message'] }] }
+                        ],
+                        questions: ['What is the policy for password complexity?', 'How many failed login attempts before locking an account?']
+                    },
+                    'profile': {
+                        title: 'Profile Management',
+                        businessGoal: 'Allow users to keep their information up to date to improve data accuracy.',
+                        mainStakeholder: 'Registered User',
+                        stakeholderGoal: 'To edit my profile information.',
+                        rules: [{ title: 'User must be logged in', examples: [{ title: 'Logged in user edits profile', steps: ['Given I am logged in', 'When I navigate to the profile page', 'Then I can see my information'] }] }, { title: 'Email address must be unique', examples: [{ title: 'User enters existing email', steps: ['Given I am editing my profile', 'When I enter an email that already exists', 'Then I see an "email taken" error'] }] }, { title: 'User can upload a profile picture', examples: [{ title: 'Successful upload', steps: ['Given I am on the profile edit page', 'When I select a valid image file', 'Then my profile picture is updated'] }, { title: 'Invalid file type', steps: ['Given I am on the profile edit page', 'When I select a non-image file', 'Then I see a "invalid file type" error'] }] }],
+                        questions: ['What fields are editable?', 'What is the max file size for uploads?']
+                    }
+                }
+            },
+            'cursor-memory': {
+                name: 'Cursor Memory Bank',
+                description: 'A system for managing cursor isolation rules.',
+                repo: 'github.com/vanzan01/cursor-memory-bank',
+                stories: {
+                    'rules-gen': {
+                        title: 'Rules Generation',
+                        businessGoal: 'Automate the creation of cursor isolation rules.',
+                        mainStakeholder: 'Developer',
+                        stakeholderGoal: 'To generate rules from a configuration file.',
+                        rules: [{ title: 'Config file must be valid JSON', examples: [] }],
+                        questions: ['What is the schema for the config file?']
+                    }
+                }
+            },
+            'auth-service': {
+                name: 'Authentication Service',
+                description: 'A centralized service for handling user authentication.',
+                repo: 'gitlab.com/team/auth-service',
+                stories: {
+                    'jwt-creation': {
+                        title: 'JWT Creation',
+                        businessGoal: 'Provide secure authentication tokens for other services.',
+                        mainStakeholder: 'API Client',
+                        stakeholderGoal: 'To receive a JWT after successful login.',
+                        rules: [{ title: 'Token must have an expiration date', examples: [] }],
+                        questions: []
+                    }
+                }
+            }
+        };
+
+        let activeProjectId = 'bdd-dashboard';
+        let activeStoryId = 'login';
+
+        const mainHeader = document.getElementById('main-header');
+        const mainContentArea = document.getElementById('main-content-area');
+        const storyListContainer = document.getElementById('story-list');
+        const projectListContainer = document.getElementById('project-list');
+
+        function createVoteButtons() {
+            return `<div class="absolute top-3 right-3 flex items-center space-x-3 text-gray-500"><button class="vote-btn flex items-center space-x-1"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-up"><path d="m6 15 6-6 6 6"/></svg><span class="font-bold">${Math.floor(Math.random() * 40)}</span></button><button class="vote-btn flex items-center space-x-1"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg><span class="font-bold">${Math.floor(Math.random() * 5)}</span></button></div>`;
+        }
+
+        function renderHeader(project) {
+             mainHeader.innerHTML = `
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800">Project: ${project.name}</h2>
+                    <p class="text-gray-600 mt-1 max-w-2xl">${project.description}</p>
+                    <div class="flex items-center text-sm text-gray-500 mt-2 space-x-4">
+                        <a href="#" class="flex items-center hover:underline">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                            <span>${project.repo}</span>
+                        </a>
+                         <span class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1.5"><path d="M20 6 9 17l-5-5"/></svg>
+                            <span>Branch: planning</span>
+                        </span>
+                    </div>
+                </div>
+                 <button id="open-story-panel-btn" class="px-4 py-2 text-sm font-semibold bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">Select Story</button>
+            `;
+            document.getElementById('open-story-panel-btn').addEventListener('click', openStoryPanel);
+        }
+        
+        function renderStory(story) {
+            if (!story) {
+                mainContentArea.innerHTML = `<div class="text-center text-gray-500">Select a story to begin.</div>`;
+                return;
+            };
+
+            const storyHtml = `
+                <div class="relative bg-yellow-100 p-4 rounded-lg shadow-lg border-2 border-yellow-300">
+                    ${createVoteButtons().replace(/text-gray-500/g, 'text-yellow-700')}
+                    <h3 class="font-semibold text-lg pb-2 mb-3 border-b border-yellow-300 text-yellow-800">Story: ${story.title}</h3>
+                    <div class="space-y-2 pr-24">
+                         <div class="grid grid-cols-[max-content,1fr] gap-x-4 gap-y-2 text-lg text-yellow-900 items-center">
+                            <select class="keyword-select story-keyword-select w-full"><option>Business Goal</option><option>Feature</option></select>
+                            <span>${story.businessGoal}</span>
+                            <select class="keyword-select story-keyword-select w-full"><option>Main Stakeholder</option></select>
+                            <span>${story.mainStakeholder}</span>
+                            <select class="keyword-select story-keyword-select w-full"><option>Stakeholder's Goal</option></select>
+                            <span>${story.stakeholderGoal}</span>
+                        </div>
+                    </div>
+                </div>`;
+
+            const rulesHtml = story.rules.map(rule => `
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-200 flex flex-col gap-4">
+                    <div class="relative bg-blue-100 p-3 rounded-lg shadow border border-blue-200 cursor-grab hover:shadow-md">
+                        ${createVoteButtons().replace(/text-gray-500/g, 'text-blue-600')}
+                        <h4 class="font-semibold pb-2 border-b border-blue-200 text-blue-800">Rule</h4>
+                        <p class="font-medium text-blue-900 pt-2 pr-20">${rule.title}</p>
+                    </div>
+                    <div class="space-y-3 pl-4 border-l-2 border-gray-300">
+                        ${rule.examples.map(example => `
+                            <div class="relative bg-green-100 p-3 rounded-lg shadow border border-green-200 cursor-grab hover:shadow-md">
+                                ${createVoteButtons().replace(/text-gray-500/g, 'text-green-600')}
+                                <h5 class="font-semibold text-sm text-green-800 mb-2 pr-16">Scenario: ${example.title}</h5>
+                                <div class="grid grid-cols-[max-content,1fr] gap-x-2 gap-y-2 text-sm text-green-900 items-center">
+                                    ${example.steps.map((step) => {
+                                        const keyword = step.split(' ')[0];
+                                        const text = step.substring(keyword.length + 1);
+                                        return `<select class="keyword-select gherkin-keyword-select"><option>${keyword}</option></select><span>${text}</span>`
+                                    }).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                     <a href="#" class="add-btn border-green-400 text-green-600 hover:bg-green-50 mt-auto font-semibold">
+                         + Add Example
+                    </a>
+                </div>
+            `).join('');
+
+            const questionsHtml = `
+                <div class="w-full mt-2">
+                    <div class="bg-red-50 rounded-xl p-4 h-full border border-red-200">
+                        <h3 class="font-semibold text-lg pb-3 mb-4 border-b-2 border-red-300 text-red-800">Questions</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            ${story.questions.map(q => `
+                                <div class="relative bg-red-100 p-3 rounded-lg shadow border border-red-200 cursor-grab hover:shadow-md">
+                                    ${createVoteButtons().replace(/text-gray-500/g, 'text-red-600')}
+                                    <p class="font-medium text-red-900 pr-20">${q}</p>
+                                </div>`).join('')}
+                        </div>
+                        <a href="#" class="add-btn border-red-400 text-red-600 hover:bg-red-50 mt-4 font-semibold">
+                             + Add Question
+                        </a>
+                    </div>
+                </div>`;
+            
+            const addRuleHtml = `<a href="#" class="add-btn border-blue-400 text-blue-600 hover:bg-blue-50 font-semibold">
+                             + Add Rule
+                        </a>`;
+
+            mainContentArea.innerHTML = `
+                ${storyHtml}
+                <div class="flex flex-col gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${rulesHtml}
+                    </div>
+                    ${addRuleHtml}
+                </div>
+                ${questionsHtml}
+            `;
+        }
+        
+        function renderStoryList(project) {
+             storyListContainer.innerHTML = Object.keys(project.stories).map(key => {
+                const story = project.stories[key];
+                const isActive = key === activeStoryId;
+                return `
+                    <a href="#" data-story-id="${key}" class="story-link block p-3 rounded-lg ${isActive ? 'bg-yellow-100 border border-yellow-300' : 'hover:bg-gray-200 border border-gray-200'}">
+                        <h4 class="font-semibold ${isActive ? 'text-yellow-800' : 'text-gray-700'}">${story.title}</h4>
+                        <p class="text-xs ${isActive ? 'text-yellow-700' : 'text-gray-600'} mt-1 truncate">${story.stakeholderGoal}</p>
+                    </a>
+                `
+            }).join('');
+            
+            document.querySelectorAll('.story-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    activeStoryId = e.currentTarget.dataset.storyId;
+                    renderStory(project.stories[activeStoryId]);
+                    renderStoryList(project);
+                    closeStoryPanel();
+                });
+            });
+        }
+        
+        function renderProjectList() {
+            projectListContainer.innerHTML = Object.keys(projectsData).map(key => {
+                const project = projectsData[key];
+                const isActive = key === activeProjectId;
+                return `
+                    <a href="#" data-project-id="${key}" class="project-link nav-card ${isActive ? 'active' : ''} block p-4 bg-white border-l-4 ${isActive ? 'border-blue-500 shadow-lg' : 'border-gray-300 hover:border-blue-400'} rounded-lg cursor-pointer">
+                        <h3 class="font-bold text-lg">${project.name}</h3>
+                        <p class="text-xs text-gray-500 mt-1 truncate">${project.repo}</p>
+                    </a>
+                `
+            }).join('');
+            
+            document.querySelectorAll('.project-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    activeProjectId = e.currentTarget.dataset.projectId;
+                    const project = projectsData[activeProjectId];
+                    activeStoryId = Object.keys(project.stories)[0]; // Select first story
+                    
+                    renderApp();
+                });
+            });
+        }
+        
+        function renderApp() {
+            const project = projectsData[activeProjectId];
+            const story = project.stories[activeStoryId];
+            
+            renderHeader(project);
+            renderStory(story);
+            renderStoryList(project);
+            renderProjectList();
+        }
+
+        // --- Panel Controls ---
+        const openStoryBtn = document.getElementById('open-story-panel-btn');
+        const closeStoryBtn = document.getElementById('close-story-panel-btn');
+        const storyOverlay = document.getElementById('story-panel-overlay');
+        const storyPanel = document.getElementById('story-panel');
+
+        function openStoryPanel() {
+            storyOverlay.classList.remove('opacity-0', 'pointer-events-none');
+            storyPanel.classList.remove('translate-x-full');
+        }
+
+        function closeStoryPanel() {
+            storyOverlay.classList.add('opacity-0', 'pointer-events-none');
+            storyPanel.classList.add('translate-x-full');
+        }
+
+        closeStoryBtn.addEventListener('click', closeStoryPanel);
+        storyOverlay.addEventListener('click', closeStoryPanel);
+
+        const projectToggleBtn = document.getElementById('project-toggle-btn');
+        const projectPanel = document.getElementById('project-panel');
+        const projectHeaderLeft = document.getElementById('project-header-left');
+
+        function toggleProjectPanel() {
+            projectPanel.classList.toggle('collapsed');
+        }
+
+        projectToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleProjectPanel();
+        });
+        
+        projectHeaderLeft.addEventListener('click', () => {
+            if (projectPanel.classList.contains('collapsed')) {
+                toggleProjectPanel();
+            }
+        });
+
+        // Initial Render
+        renderApp();
+    </script>
+</body>
+</html>
